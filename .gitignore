@@ -1,0 +1,6 @@
+app/server/node_modules
+app/web/node_modules
+
+
+app/server/.env
+app/web/.env
