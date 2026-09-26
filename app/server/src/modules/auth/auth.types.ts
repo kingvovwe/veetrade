@@ -1,11 +1,15 @@
 import { TResponse } from "../../types/response.type";
 
-export type TLoginResData = {
+
+export type TJwtPaylod = {
     userId: string;
-    email: string;
+    isEmailVerified: boolean;
 }
 
-export type TLoginRes = TResponse<TLoginResData>;
+export type TAuthResData = TJwtPaylod;
+
+export type TLoginRes = TResponse<TAuthResData>;
+export type TRegisterRes = TResponse<TAuthResData>;
 
 
 export type TLoginReqData = {
@@ -14,8 +18,8 @@ export type TLoginReqData = {
 }
 
 export type TRegisterReqData = {
-    name: string;
+    firstname: string;
+    lastname: string;
     email: string;
     password: string;
-
 }

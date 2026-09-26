@@ -15,6 +15,10 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
+    password: {
+        type: String,
+        required: true,
+    },
     status: {
         type: String,
         enum: ['active', 'in-active'],
