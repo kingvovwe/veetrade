@@ -1,4 +1,5 @@
 import { SUser } from "../../models/user.model";
+import { sendLoginWelcomeEmail, sendRegisterWelcomeEmail } from "./auth.mail";
 import { TLoginReqData, TLoginRes, TRegisterReqData, TRegisterRes } from "./auth.types";
 
 
@@ -20,8 +21,7 @@ export const loginService = async (data: TLoginReqData): Promise<TLoginRes> => {
                 success: false,
                 message: "Incorrect Details",
                 data: {
-                    userId: "",
-                    isEmailVerified: false
+                    userId: ""
                 }
             }
         }
@@ -36,8 +36,7 @@ export const loginService = async (data: TLoginReqData): Promise<TLoginRes> => {
                 success: false,
                 message: "Incorrect Details",
                 data: {
-                    userId: "",
-                    isEmailVerified: false
+                    userId: ""
                 }
             }
         }
@@ -46,6 +45,8 @@ export const loginService = async (data: TLoginReqData): Promise<TLoginRes> => {
     user.lastLoginAt = new Date();
     await user.save();
 
+    await sendLoginWelcomeEmail(user.email, user.firstname);
+
     
     return {
         status: 200,
@@ -53,8 +54,7 @@ export const loginService = async (data: TLoginReqData): Promise<TLoginRes> => {
             success: true,
             message: `Welcome Back ${user.firstname}`,
             data: {
-                userId: user._id.toString(),
-                isEmailVerified: user.emailVerified
+                userId: user._id.toString()
             }
         }
     }
@@ -63,7 +63,6 @@ export const loginService = async (data: TLoginReqData): Promise<TLoginRes> => {
 
 export const registerService = async (data: TRegisterReqData): Promise<TRegisterRes> => {
     
-    console.log(data);
     const { firstname, lastname, email, password } = data;
 
     const hashedPassword = await hash(password, 10);
@@ -83,12 +82,13 @@ export const registerService = async (data: TRegisterReqData): Promise<TRegister
                 success: false,
                 message: "Failed to Register User",
                 data: {
-                    userId: "",
-                    isEmailVerified: false
+                    userId: ""
                 }
             }
         }
     }
+
+    await sendRegisterWelcomeEmail(user.email, user.firstname);
     
     
     
@@ -98,9 +98,13 @@ export const registerService = async (data: TRegisterReqData): Promise<TRegister
             success: true,
             message: "Registration successful",
             data: {
-                userId: user._id.toString(),
-                isEmailVerified: user.emailVerified
+                userId: user._id.toString()
             }
         }
     }
+}
+
+
+export const verifyEmailService = async (): Promise<void> => {
+
 }

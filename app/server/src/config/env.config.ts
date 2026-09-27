@@ -13,3 +13,5 @@ export const CORS = process.env.CORS;
 export const NODE_ENV = process.env.NODE_ENV;
 
 
+export const SMTP_EMAIL = process.env.SMTP_EMAIL;
+export const SMTP_PASS = process.env.SMTP_PASS;

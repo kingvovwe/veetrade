@@ -3,7 +3,6 @@ import { TResponse } from "../../types/response.type";
 
 export type TJwtPaylod = {
     userId: string;
-    isEmailVerified: boolean;
 }
 
 export type TAuthResData = TJwtPaylod;

@@ -4,6 +4,7 @@ import { TJwtPaylod } from "./auth.types";
 import { NODE_ENV, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from "../../config/env.config";
 
 import jwt from "jsonwebtoken"
+import crypto from "crypto"
 
 const isProd = NODE_ENV === "production";
 
@@ -42,12 +43,10 @@ export const verifyToken = (token: string, secret: string) => {
 
 
 export const createAuthTokens = (
-    userId: string,
-    isEmailVerified: boolean
+    userId: string
 ) => {
     const jwtPayload: TJwtPaylod = {
-        userId,
-        isEmailVerified
+        userId
     }
 
     const accessToken = genToken(jwtPayload, JWT_ACCESS_SECRET!, "15m");
@@ -58,4 +57,9 @@ export const createAuthTokens = (
     }
 }
 
+
+
+export const genOTPCode = (): string => {
+    return crypto.randomInt(100000, 1000000).toString();
+}
 
