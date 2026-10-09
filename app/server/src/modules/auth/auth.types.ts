@@ -9,7 +9,8 @@ export type TAuthResData = TJwtPaylod;
 
 export type TLoginRes = TResponse<TAuthResData>;
 export type TRegisterRes = TResponse<TAuthResData>;
-
+export type TSendOTPRes = TResponse<null>;
+export type TVerifyOTPRes = TResponse<null>;
 
 export type TLoginReqData = {
     email: string;
@@ -21,4 +22,13 @@ export type TRegisterReqData = {
     lastname: string;
     email: string;
     password: string;
+}
+
+export type TSendOTPReqData = {
+    email: string;
+}
+
+export type TVerifyOTPReqData = {
+    email: string;
+    otpCode: string;
 }

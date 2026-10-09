@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body } from "express-validator"
 
 
-import { loginController, registerController } from "./auth.controller";
+import { loginController, registerController, sendOTPController, verifyEmailOTP } from "./auth.controller";
 import { validateInput } from "../../middleware/validation.middleware";
 
 
@@ -26,6 +26,20 @@ authRoute.post(
     validateInput,
     registerController
 );
+
+authRoute.post(
+    '/send-otp',
+    body('email').notEmpty().withMessage("No Email"),
+    sendOTPController
+);
+
+authRoute.post(
+    '/verify-otp',
+    body('email').notEmpty().withMessage("No Email"),
+    body('otpCode').notEmpty().withMessage("No OTP"),
+    verifyEmailOTP
+
+)
 
 
 

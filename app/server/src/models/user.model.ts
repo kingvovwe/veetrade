@@ -24,6 +24,8 @@ const userSchema = new Schema({
         enum: ['active', 'in-active'],
         default: 'in-active'
     },
+    otpCode: String,
+    expirationDate: Date,
     emailVerified: {
         type: Boolean,
         default: false

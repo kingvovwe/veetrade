@@ -1,6 +1,6 @@
-import { loginService, registerService } from "./auth.service"
+import { loginService, registerService, sendOTPService, verifyEmailOTPService } from "./auth.service"
 import { NextFunction, Request, Response } from "express";
-import { TLoginReqData, TLoginRes, TRegisterReqData, TRegisterRes } from "./auth.types";
+import { TLoginReqData, TLoginRes, TRegisterReqData, TSendOTPReqData, TSendOTPRes, TRegisterRes, TVerifyOTPReqData, TVerifyOTPRes } from "./auth.types";
 import { createAuthTokens } from "./auth.helper";
 
 import { accessCookieOptions, refreshCookieOptions } from "./auth.helper";
@@ -108,6 +108,41 @@ export const sendOTPController = async (
     res: Response
 ) => {
 
+    
+
+    try {
+
+        const data: TSendOTPReqData = req.body;
+
+        const result: TSendOTPRes = await sendOTPService(data);
+        
+        res.status(result.status).json(result.jsonRes);
+
+
+    } catch (e: unknown) {
+
+        console.error(e);
+
+        if(e instanceof Error) {
+            res.status(400).json({
+                success: false,
+                message: "Error trying to Send OTP",
+                data: e.message
+            });
+
+            return;
+        }
+
+        
+        res.status(500).json({
+            success: false,
+            message: "Unexpected Error Occured",
+            data: e
+        });
+
+
+    }
+
 }
 
 
@@ -118,7 +153,11 @@ export const verifyEmailOTP = async (
 ) => {
     try {
 
+        const data: TVerifyOTPReqData = req.body;
 
+        const result: TVerifyOTPRes = await verifyEmailOTPService(data);
+
+        res.status(result.status).json(result.jsonRes);
 
     } catch (e: unknown) {
 

@@ -1,6 +1,7 @@
 import { SUser } from "../../models/user.model";
-import { sendLoginWelcomeEmail, sendRegisterWelcomeEmail } from "./auth.mail";
-import { TLoginReqData, TLoginRes, TRegisterReqData, TRegisterRes } from "./auth.types";
+import { genOTPCode } from "./auth.helper";
+import { sendLoginWelcomeEmail, sendRegisterWelcomeEmail, sendVerifyEmailOTP } from "./auth.mail";
+import { TLoginReqData, TLoginRes, TRegisterReqData, TRegisterRes, TSendOTPReqData, TSendOTPRes, TVerifyOTPReqData, TVerifyOTPRes } from "./auth.types";
 
 
 import { hash, compare } from 'bcrypt'
@@ -104,7 +105,108 @@ export const registerService = async (data: TRegisterReqData): Promise<TRegister
     }
 }
 
+export const sendOTPService = async (data: TSendOTPReqData): Promise<TSendOTPRes> => {
+    
+    const email = data.email;
 
-export const verifyEmailService = async (): Promise<void> => {
+    const user = await SUser.findOne({ email });
 
+    if(!user) {
+        return {
+            status: 404,
+            jsonRes: {
+                success: false,
+                message: "Email Not Found",
+                data: null
+            }
+        }
+    }
+
+    const otpCode: string = genOTPCode();
+
+    const expirationDate = new Date();
+
+    expirationDate.setMinutes(expirationDate.getMinutes() + 15);
+
+    const currDate = new Date();
+
+    user.otpCode = otpCode;
+    user.expirationDate = expirationDate;
+
+
+    await user.save();
+
+    await sendVerifyEmailOTP(email, otpCode);
+
+
+    return {
+        status: 200,
+        jsonRes: {
+            success: true,
+            message: `OTP Sent to your Email`,
+            data: null
+        }
+    }
+
+    
+
+}
+
+
+export const verifyEmailOTPService = async (data: TVerifyOTPReqData): Promise<TVerifyOTPRes> => {
+    
+    const { email, otpCode } = data;
+
+    const user = await SUser.findOne({ email });
+
+
+    if(!user) {
+        return {
+            status: 404,
+            jsonRes: {
+                success: false,
+                message: "Email Not Found",
+                data: null
+            }
+        }
+    }
+
+    if(user.otpCode !== otpCode) {
+        return {
+            status: 404,
+            jsonRes: {
+                success: false,
+                message: "Wrong OTP",
+                data: null
+            }
+        }
+    }
+
+    const currDate = new Date();
+
+    if(!user.expirationDate || currDate >= user.expirationDate){
+        return {
+            status: 400,
+            jsonRes: {
+                success: false,
+                message: "OTP Expired. Send a new One.",
+                data: null
+            }
+        }
+    }
+
+    user.otpCode = "";
+    user.expirationDate = undefined;
+
+    await user.save();
+
+
+    return {
+        status: 200,
+        jsonRes: {
+            success: true,
+            message: `Email verified`,
+            data: null
+        }
+    }
 }
